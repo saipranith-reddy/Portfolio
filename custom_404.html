@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oops! Page Not Found</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #333;
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 520px;
+            padding: 50px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, a0, 0, 0.12);
+            animation: fade-in 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-code {
+            font-size: 140px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #FF3366, #FF9933);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            line-height: 1;
+            letter-spacing: -4px;
+            text-shadow: 3px 3px 20px rgba(255, 51, 102, 0.2);
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 35px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #FF3366, #FF9933);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(255, 51, 102, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 15px 25px rgba(255, 51, 102, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .emoji-container {
+            position: relative;
+            height: 120px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .emoji {
+            font-size: 80px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite, spin 15s linear infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed rgba(255, 153, 51, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+        
+        .mini-planet {
+            position: absolute;
+            font-size: 18px;
+            animation: orbit 8s linear infinite;
+        }
+        
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+        }
+    </style>
+</head>
+<body onload="createStars()">
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <div class="emoji-container">
+            <div class="orbit"></div>
+            <div class="mini-planet" style="animation-delay: 0s;">💫</div>
+            <div class="mini-planet" style="animation-delay: -2s;">✨</div>
+            <div class="mini-planet" style="animation-delay: -4s;">🌟</div>
+            <div class="emoji">🚀</div>
+        </div>
+        <div class="error-code">404</div>
+        <h1>Houston, We Have a Problem!</h1>
+        <p>The page you're looking for has drifted off into space. Don't worry though, we can help you navigate back to familiar territory.</p>
+        <a href="/" class="btn">Return to Home Base</a>
+    </div>
+
+    <script>
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const count = 100;
+            
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 4}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+    </script>
+</body>
+</html>
