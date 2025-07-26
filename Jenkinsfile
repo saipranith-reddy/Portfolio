@@ -6,6 +6,9 @@ pipeline {
         TARGET_DIR = '/var/www/html/'
         SSH_CREDENTIALS_ID = 'portfolio-ssh'
         IMAGE_NAME = 'portfolio'
+        CONTAINER_NAME = 'portfolio-container'
+        HOST_PORT = '9000'
+        CONTAINER_PORT = '80'
     }
 
     stages {
