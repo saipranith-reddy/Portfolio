@@ -5,6 +5,7 @@ pipeline {
         EC2_HOST = 'ubuntu@15.206.67.8'
         TARGET_DIR = '/var/www/html/'
         SSH_CREDENTIALS_ID = 'portfolio-ssh'
+        IMAGE_NAME = 'portfolio'
     }
 
     stages {
@@ -38,11 +39,32 @@ pipeline {
                         echo "[INFO] Restarting Nginx on remote EC2..."
                         ssh -o StrictHostKeyChecking=no $EC2_HOST "sudo systemctl restart nginx || echo 'Nginx restart failed'"
 
-                        echo "[SUCCESS] Deployment completed successfully!"
+                        echo "[SUCCESS] Files Deployed successfully!"
                     '''
                 }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                pwd
+                ls -la
+                docker build -t $IMAGE_NAME .
+                '''
+            }
+        }
+        stage('Run Docker Container') {
+            steps {
+                sh '''
+                # Stop and remove existing container if exists
+                docker rm -f $CONTAINER_NAME || true
+
+                # Run container with port mapping
+                docker run -d -p $HOST_PORT:$CONTAINER_PORT --name $CONTAINER_NAME $IMAGE_NAME
+                '''
+            }
+        }
+
     }
 
     post {
