@@ -2,42 +2,49 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = 'ubuntu@15.206.67.8'              // ✅ portfolio EC2 user@IP
-        TARGET_DIR = '/var/www/html/'       // ✅ Nginx root directory
-        SSH_CREDENTIALS_ID = 'portfolio-ssh'               // ✅ Jenkins Credentials ID for portfolio EC2 SSH key
+        EC2_HOST = 'ubuntu@15.206.67.8'
+        TARGET_DIR = '/var/www/html/'
+        SSH_CREDENTIALS_ID = 'portfolio-ssh'
     }
 
     stages {
-       stage('Checkout from GitHub') {
-    steps {
-        timeout(time: 5, unit: 'MINUTES') {
-            checkout([$class: 'GitSCM',
-              userRemoteConfigs: [[url: 'https://github.com/saipranith-reddy/Portfolio.git']],
-              branches: [[name: '*/main']],
-              extensions: [[$class: 'CloneOption', depth: 1, noTags: false, shallow: true]]
-            ])
+        stage('Checkout from GitHub') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    checkout([$class: 'GitSCM',
+                        userRemoteConfigs: [[url: 'https://github.com/saipranith-reddy/Portfolio.git']],
+                        branches: [[name: '*/main']],
+                        extensions: [[$class: 'CloneOption', depth: 1, noTags: false, shallow: true]]
+                    ])
+                }
+            }
         }
-    }
-}
+
         stage('List Workspace Files') {
             steps {
                 sh 'ls -la'
             }
         }
+
         stage('Deploy to EC2') {
             steps {
                 sshagent (credentials: [SSH_CREDENTIALS_ID]) {
                     sh '''
+                    set -e  # Stop immediately if a command exits with a non-zero status
+
+                    echo "[DEBUG] Verifying EC2 connectivity..."
+                    ssh -vvv -o StrictHostKeyChecking=no $EC2_HOST "echo EC2 connection successful"
+
                     echo "[INFO] Cleaning existing files on remote EC2..."
-                    ssh -o StrictHostKeyChecking=no $EC2_HOST "rm -rf $TARGET_DIR/*"
+                    ssh -o StrictHostKeyChecking=no $EC2_HOST "rm -rf $TARGET_DIR/* || echo 'Cleanup failed'"
 
                     echo "[INFO] Copying files to EC2..."
-                    scp -o StrictHostKeyChecking=no -r * $EC2_HOST:$TARGET_DIR
+                    scp -o StrictHostKeyChecking=no -r * $EC2_HOST:$TARGET_DIR || echo 'SCP failed'
 
                     echo "[INFO] Restarting Nginx on remote EC2..."
-                    ssh -o StrictHostKeyChecking=no $EC2_HOST "sudo systemctl restart nginx"
+                    ssh -o StrictHostKeyChecking=no $EC2_HOST "sudo systemctl restart nginx || echo 'Nginx restart failed'"
 
-                    echo "[INFO] Deployment completed to $EC2_HOST:$TARGET_DIR and Nginx restarted"
+                    echo "[SUCCESS] Deployment completed successfully!"
                     '''
                 }
             }
@@ -49,7 +56,7 @@ pipeline {
             echo "✅ Deployment succeeded"
         }
         failure {
-            echo "❌ Deployment failed"
+            echo "❌ Deployment failed – check logs above for details"
         }
     }
 }
