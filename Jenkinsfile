@@ -8,15 +8,11 @@ pipeline {
     }
 
     stages {
+        
+    stages {
         stage('Checkout from GitHub') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    checkout([$class: 'GitSCM',
-                        userRemoteConfigs: [[url: 'https://github.com/saipranith-reddy/Portfolio.git']],
-                        branches: [[name: '*/main']],
-                        extensions: [[$class: 'CloneOption', depth: 1, noTags: false, shallow: true]]
-                    ])
-                }
+                git url: 'https://github.com/saipranith-reddy/Portfolio.git', branch: 'main'
             }
         }
 
