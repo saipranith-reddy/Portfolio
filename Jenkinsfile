@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = 'ubuntu@15.206.67.8'
+        EC2_HOST = 'ubuntu@13.204.124.176'
         TARGET_DIR = '/var/www/html/'
         SSH_CREDENTIALS_ID = 'portfolio-ssh'
         IMAGE_NAME = 'portfolio'
