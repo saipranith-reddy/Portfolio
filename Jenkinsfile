@@ -1,29 +1,49 @@
 pipeline {
     agent any
 
+    environment {
+        EC2_HOST = 'ubuntu@15.206.67.8'              // ✅ portfolio EC2 user@IP
+        TARGET_DIR = '/var/www/html/'       // ✅ Nginx root directory
+        SSH_CREDENTIALS_ID = 'portfolio-ssh'               // ✅ Jenkins Credentials ID for portfolio EC2 SSH key
+    }
+
     stages {
-        stage('Create Docker image') {
+        stage('Checkout from GitHub') {
             steps {
-                sh 'docker build -t testingpipeline:v1 .'
+                git 'https://github.com/saipranith-reddy/Portfolio.git'  // ✅ Potfolio github repo
             }
         }
-        stage('Deleting old container') {
+        stage('List Workspace Files') {
             steps {
-                sh 'docker rm -f httpd'
+                sh 'ls -la'
             }
         }
-        
-        
-        stage('Create a container') {
+        stage('Deploy to EC2') {
             steps {
-                sh 'docker run -d --name httpd -p 82:80 testingpipeline:v1'
+                sshagent (credentials: [SSH_CREDENTIALS_ID]) {
+                    sh '''
+                    echo "[INFO] Cleaning existing files on remote EC2..."
+                    ssh -o StrictHostKeyChecking=no $EC2_HOST "rm -rf $TARGET_DIR/*"
+
+                    echo "[INFO] Copying files to EC2..."
+                    scp -o StrictHostKeyChecking=no -r * $EC2_HOST:$TARGET_DIR
+
+                    echo "[INFO] Restarting Nginx on remote EC2..."
+                    ssh -o StrictHostKeyChecking=no $EC2_HOST "sudo systemctl restart nginx"
+
+                    echo "[INFO] Deployment completed to $EC2_HOST:$TARGET_DIR and Nginx restarted"
+                    '''
+                }
             }
         }
-        stage('Dangling Image remove') {
-            steps {
-                sh 'docker rmi -f $(docker images -f dangling=true)'
-            }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment succeeded"
         }
-        
+        failure {
+            echo "❌ Deployment failed"
+        }
     }
 }
