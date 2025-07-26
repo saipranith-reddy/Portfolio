@@ -8,11 +8,17 @@ pipeline {
     }
 
     stages {
-        stage('Checkout from GitHub') {
-            steps {
-                git 'https://github.com/saipranith-reddy/Portfolio.git'  // ✅ Potfolio github repo
-            }
+       stage('Checkout from GitHub') {
+    steps {
+        timeout(time: 5, unit: 'MINUTES') {
+            checkout([$class: 'GitSCM',
+              userRemoteConfigs: [[url: 'https://github.com/saipranith-reddy/Portfolio.git']],
+              branches: [[name: '*/main']],
+              extensions: [[$class: 'CloneOption', depth: 1, noTags: false, shallow: true]]
+            ])
         }
+    }
+}
         stage('List Workspace Files') {
             steps {
                 sh 'ls -la'
