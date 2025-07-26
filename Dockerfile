@@ -4,7 +4,7 @@ LABEL maintainer="Pranith Reddy"
 
 # Install Nginx
 RUN apt-get update && \
-    apt-get install -y nginx && \
+    apt-get install -y nginx && \ 
     apt-get clean
 
 # Set working directory
