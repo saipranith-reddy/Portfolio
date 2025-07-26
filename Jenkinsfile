@@ -23,8 +23,8 @@ pipeline {
                 sh 'ls -la'
             }
         }
-
-        stage('Deploy to EC2') {
+        //Below code is to deploy to Portfolio EC2
+        /*stage('Deploy to EC2') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                     sh '''
@@ -46,7 +46,9 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
+        
+        //To launch container and host website in Jenkins server.
         stage('Build Docker Image') {
             steps {
                 sh '''
