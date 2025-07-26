@@ -26,8 +26,8 @@ pipeline {
                     sh '''
                         set -e
 
-                        echo "[DEBUG] Verifying EC2 connectivity..."
-                        ssh -vvv -o StrictHostKeyChecking=no $EC2_HOST "echo EC2 connection successful"
+                        echo "[INFO] Establishing EC2 connectivity..."
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST "echo EC2 connection successful"
 
                         echo "[INFO] Cleaning existing files on remote EC2..."
                         ssh -o StrictHostKeyChecking=no $EC2_HOST "sudo rm -rf $TARGET_DIR/* || echo 'Cleanup failed'"
